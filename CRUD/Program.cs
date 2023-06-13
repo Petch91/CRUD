@@ -7,9 +7,11 @@ using System.Text;
 
 int choix = 0;
 List<Fournisseurs> annuaire = new List<Fournisseurs>();
+bool vide = EmptyList(annuaire);
 do
 {
-    choix = Menu(annuaire.Count == 0);
+    vide = EmptyList(annuaire);
+    choix = Menu(vide);
     switch (choix)
     {
         case 1:
@@ -19,7 +21,7 @@ do
             }
         case 2:
             {
-                if (annuaire.Count != 0) ModifyFournisseur(annuaire);
+                if (!vide) ModifyFournisseur(annuaire);
                                          
                 break;  
             }
@@ -35,11 +37,12 @@ do
             }
         case 5:
             {
+                SortFournisseurs(annuaire);
                 break;
             }
 
     }    
-}while((choix != 5 && annuaire.Count != 0) || (choix != 2 && annuaire.Count == 0));
+}while((choix != 6 && !vide) || (choix != 2 && vide));
 
 
 
@@ -66,16 +69,22 @@ int Menu(bool vide)
                               "2: Modifier\n" +
                               "3: Supprimer\n" +
                               "4: Afficher\n" +
-                              "5: Quitter"
+                              "5: Trier\n" +
+                              "6: Quitter"
                               );
         }
         Console.WriteLine("Quel est votre choix? ");
         s = Console.ReadLine();
 
-    } while (int.TryParse(s, out choix) && ((choix != 5 && !vide) || (choix != 2 && vide)));
+    } while (!(int.TryParse(s, out choix)) && ((choix != 6 && !vide) || (choix != 2 && vide)));
 
 
     return choix;
+}
+
+bool EmptyList(List<Fournisseurs> list)
+{
+    return list.Count == 0;
 }
 
 int SelectFournisseur(List<Fournisseurs> list)
@@ -89,7 +98,7 @@ int SelectFournisseur(List<Fournisseurs> list)
             ShowList(list);
             Console.WriteLine("Quel fournisseur voulez vous choisir? ");
             s = Console.ReadLine();
-        } while (int.TryParse(s, out choix));
+        } while (!int.TryParse(s, out choix));
         choix -= 1;
         if (choix >= list.Count)  return list.Count;
         break;
@@ -230,4 +239,33 @@ void ModifyFournisseur(List<Fournisseurs> list)
         list.Insert(choix, fo);
     } while (c != 7);
 
+}
+
+void SortFournisseurs(List<Fournisseurs> list)
+{
+    List<Fournisseurs> cList = list;
+    for (int i = 0; i < cList.Count - 1; i++)
+    {
+        for (int j = 0; j<cList.Count - 1-i; j++)
+        {
+            if (char.Parse(cList[j].Name.Substring(0,1)) > (char.Parse(cList[j+1].Name.Substring(0, 1))))
+            {
+                (cList[j], cList[j + 1]) = (cList[j + 1], cList[j]);
+            }
+        }
+    }
+    Console.WriteLine("Voici les fournisseurs triès par ordre alphabétique: ");
+    ShowList(cList);
+    while (true)
+    {
+        Console.WriteLine("Voulez vous garder cette ordre? (o pour oui, n pour non)");
+        string reponse = Console.ReadLine() ?? "";
+        if (reponse == "o")
+        {
+            list = cList;
+            break;
+        }
+        else if (reponse == "n") break;
+        Console.Clear();
+    }
 }

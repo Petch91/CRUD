@@ -19,7 +19,7 @@ do
             }
         case 2:
             {
-                if (annuaire.Count != 0) ModifyFournisseur(ref annuaire);
+                if (annuaire.Count != 0) ModifyFournisseur(annuaire);
                                          
                 break;  
             }
@@ -45,37 +45,52 @@ do
 
 int Menu(bool vide)
 {
-    Console.Clear();
-    if (vide)
+
+    int choix;
+    string s;
+    do
     {
-        Console.WriteLine("  MENU : Fournisseurs\n" +
-                          "---------------------\n" +
-                          "1: Ajouter\n"+
-                          "2: Quitter");
-    }
-    else
-    {
-        Console.WriteLine("  MENU : Fournisseurs\n" +
-                          "---------------------\n" +
-                          "1: Ajouter\n" +
-                          "2: Modifier\n" +
-                          "3: Supprimer\n" +
-                          "4: Afficher\n" +
-                          "5: Quitter"
-                          );
-    }
-    Console.WriteLine("Quel est votre choix? ");
-    return int.Parse(Console.ReadLine() ?? "");
+        Console.Clear();
+        if (vide)
+        {
+            Console.WriteLine("  MENU : Fournisseurs\n" +
+                              "---------------------\n" +
+                              "1: Ajouter\n" +
+                              "2: Quitter");
+        }
+        else
+        {
+            Console.WriteLine("  MENU : Fournisseurs\n" +
+                              "---------------------\n" +
+                              "1: Ajouter\n" +
+                              "2: Modifier\n" +
+                              "3: Supprimer\n" +
+                              "4: Afficher\n" +
+                              "5: Quitter"
+                              );
+        }
+        Console.WriteLine("Quel est votre choix? ");
+        s = Console.ReadLine();
+
+    } while (int.TryParse(s, out choix) && ((choix != 5 && !vide) || (choix != 2 && vide)));
+
+
+    return choix;
 }
 
 int SelectFournisseur(List<Fournisseurs> list)
 {
     int choix;
+    string s;
     while (true)
     {
-        ShowList(list);
-        Console.WriteLine("Quel fournisseur voulez vous choisir? ");
-        choix = (int.Parse(Console.ReadLine()) - 1);
+        do
+        {
+            ShowList(list);
+            Console.WriteLine("Quel fournisseur voulez vous choisir? ");
+            s = Console.ReadLine();
+        } while (int.TryParse(s, out choix));
+        choix -= 1;
         if (choix >= list.Count)  return list.Count;
         break;
     }
@@ -143,7 +158,7 @@ void DeleteFournisseur(List<Fournisseurs>  list)
     list.RemoveAt(choix);
 }
 
-void ModifyFournisseur(ref List<Fournisseurs> list)
+void ModifyFournisseur(List<Fournisseurs> list)
 {
     int c = 0;
     int choix;
